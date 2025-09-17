@@ -1,3 +1,4 @@
+
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { persist } from 'zustand/middleware';
@@ -22,14 +23,22 @@ interface UserPrefs {
   language: 'en' | 'id';
 }
 
+interface TimerState {
+  eventId: string | null;
+  time: number;
+  isRunning: boolean;
+}
+
 interface AppState {
   events: Event[];
   stats: Stats;
   userPrefs: UserPrefs;
+  timerState: TimerState;
   addEvent: (name: string, color?: string) => void;
   deleteEvent: (id: string) => void;
   updateStats: (eventName: string, duration: number, rating?: number) => void;
   setUserPrefs: (prefs: Partial<UserPrefs>) => void;
+  setTimerState: (timer: Partial<TimerState>) => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -38,6 +47,7 @@ export const useAppStore = create<AppState>()(
       events: [],
       stats: { points: 0, streaks: 0, history: [] },
       userPrefs: { theme: 'light', sound: 'default', language: 'id' },
+      timerState: { eventId: null, time: 0, isRunning: false },
       addEvent: (name, color) =>
         set((state) => ({
           events: [...state.events, { id: uuidv4(), name, initialTime: 0, color }],
@@ -60,6 +70,10 @@ export const useAppStore = create<AppState>()(
       setUserPrefs: (prefs) =>
         set((state) => ({
           userPrefs: { ...state.userPrefs, ...prefs },
+        })),
+      setTimerState: (timer) =>
+        set((state) => ({
+          timerState: { ...state.timerState, ...timer },
         })),
     }),
     {

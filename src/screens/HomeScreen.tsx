@@ -1,81 +1,59 @@
 
-import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
-import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
-import * as Haptics from 'expo-haptics';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, FlatList } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { MaterialIcons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import EventCard from '../components/EventCard';
 import Tooltip from '../components/Tooltip';
 import { useAppStore } from '../store';
-
-type RootStackParamList = {
-  Splash: undefined;
-  Home: undefined;
-  Countdown: { eventId: string };
-  AddEvent: undefined;
-};
+import { colors } from '../constants/colors';
+import type { RootStackParamList } from '../navigation/AppNavigator';
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 const HomeScreen: React.FC = () => {
-  const { events } = useAppStore();
+  const { t } = useTranslation();
   const navigation = useNavigation<NavigationProp>();
-  const [showTooltip, setShowTooltip] = useState(true);
-
-  // Animasi untuk FAB
-  const fabScale = useSharedValue(1);
-  const animatedFabStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: fabScale.value }],
-  }));
-
-  // Cek apakah user baru (misalnya, jika events kosong)
-  useEffect(() => {
-    if (events.length > 0) {
-      setShowTooltip(false);
-    }
-  }, [events]);
+  const events = useAppStore((state) => state.events);
+  const [showTooltip, setShowTooltip] = useState(events.length === 0);
 
   const handleAddEvent = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    fabScale.value = withSpring(1.2, {}, () => {
-      fabScale.value = withSpring(1);
-    });
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     navigation.navigate('AddEvent');
   };
 
   return (
-    <View className="flex-1 bg-white p-4">
+    <View className={`flex-1 bg-[${colors.backgroundLight}] p-4`}>
+      <Text className={`text-2xl font-bold text-[${colors.textPrimary}] mb-4`}>
+        {t('home.title')}
+      </Text>
       {events.length === 0 ? (
         <View className="flex-1 justify-center items-center">
-          <Text className="text-xl font-semibold text-gray-900">
-            Tambah event pertama kamu!
-          </Text>
+          <Text className={`text-lg text-[${colors.textSecondary}]`}>{t('home.empty')}</Text>
         </View>
       ) : (
         <FlatList
           data={events}
+          keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <EventCard id={item.id} name={item.name} color={item.color} />
           )}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={{ paddingBottom: 80 }}
         />
       )}
       <Tooltip
         isVisible={showTooltip}
-        content="Tap '+' untuk tambah event baru!"
+        content={t('home.addButton')}
         onClose={() => setShowTooltip(false)}
       >
-        <Animated.View style={animatedFabStyle} className="absolute bottom-6 right-6">
-          <TouchableOpacity
-            onPress={handleAddEvent}
-            className="bg-blue-500 p-4 rounded-full shadow-md"
-          >
-            <MaterialIcons name="add" size={24} color="white" />
-          </TouchableOpacity>
-        </Animated.View>
+        <TouchableOpacity
+          className={`absolute bottom-4 right-4 bg-[${colors.primary}] p-4 rounded-full shadow-md`}
+          onPress={handleAddEvent}
+        >
+          <MaterialIcons name="add" size={24} color="white" />
+        </TouchableOpacity>
       </Tooltip>
     </View>
   );

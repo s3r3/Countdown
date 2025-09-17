@@ -1,0 +1,51 @@
+
+{
+  "home": {
+    "title": "Timer Mundur",
+    "empty": "Tambah event pertamamu!",
+    "addButton": "Tambah Event"
+  },
+  "addEvent": {
+    "title": "Buat Event Baru",
+    "namePlaceholder": "Masukkan nama event (misal, Belajar)",
+    "submit": "Buat",
+    "error": "Harap masukkan nama event"
+  },
+  "countdown": {
+    "start": "Mulai",
+    "pause": "Jeda",
+    "reset": "Reset",
+    "addSecond": "Tambah 1 Detik",
+    "subtractSecond": "Kurang 1 Detik",
+    "preset15": "15 Menit",
+    "preset25": "25 Menit",
+    "preset45": "45 Menit",
+    "done": "Waktu habis untuk {eventName}!",
+    "quote": "Kutipan Motivasi"
+  },
+  "rating": {
+    "title": "Beri rating untuk sesi \"{eventName}\"",
+    "close": "Tutup"
+  },
+  "stats": {
+    "title": "Statistikmu",
+    "totalTime": "Total Waktu: {hours} jam",
+    "streaks": "Streak: {count} hari",
+    "history": "Riwayat"
+  },
+  "settings": {
+    "title": "Pengaturan",
+    "theme": "Tema",
+    "themeLight": "Terang",
+    "themeDark": "Gelap",
+    "sound": "Suara",
+    "language": "Bahasa",
+    "languageEn": "Inggris",
+    "languageId": "Indonesia"
+  },
+  "notifications": {
+    "title": "Timer {eventName}",
+    "body": "Waktu tersisa: {time}",
+    "done": "{eventName} selesai!"
+  }
+}

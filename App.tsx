@@ -1,15 +1,22 @@
-// App.tsx
-import React from "react";
-import { LogBox } from "react-native";
-import AppNavigator from "./src/navigation/AppNavigator";
-import "./global.css";
 
-// Ignore Metro "level" bug
-LogBox.ignoreLogs([
-  "Cannot read property 'level' of undefined",
-]);
+import React, { useEffect } from 'react';
+import AppNavigator  from './src/navigation/AppNavigator';
+// import './src/i18n'; // Inisialisasi i18n
+import { setupNotificationListener, requestNotificationPermission } from './src/utils/notifications';
+import "./global.css"
 
-const App = () => {
+const App: React.FC = () => {
+  useEffect(() => {
+    const initNotifications = async () => {
+      const hasPermission = await requestNotificationPermission();
+      if (hasPermission) {
+        const subscription = setupNotificationListener();
+        return () => subscription.remove();
+      }
+    };
+    initNotifications();
+  }, []);
+
   return <AppNavigator />;
 };
 

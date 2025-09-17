@@ -1,0 +1,51 @@
+
+{
+  "home": {
+    "title": "Countdown Timer",
+    "empty": "Add your first event!",
+    "addButton": "Add Event"
+  },
+  "addEvent": {
+    "title": "Create New Event",
+    "namePlaceholder": "Enter event name (e.g., Study)",
+    "submit": "Create",
+    "error": "Please enter an event name"
+  },
+  "countdown": {
+    "start": "Start",
+    "pause": "Pause",
+    "reset": "Reset",
+    "addSecond": "Add 1 Second",
+    "subtractSecond": "Subtract 1 Second",
+    "preset15": "15 Min",
+    "preset25": "25 Min",
+    "preset45": "45 Min",
+    "done": "Time's up for {eventName}!",
+    "quote": "Motivational Quote"
+  },
+  "rating": {
+    "title": "Rate your \"{eventName}\" session",
+    "close": "Close"
+  },
+  "stats": {
+    "title": "Your Stats",
+    "totalTime": "Total Time: {hours} hours",
+    "streaks": "Streaks: {count} days",
+    "history": "History"
+  },
+  "settings": {
+    "title": "Settings",
+    "theme": "Theme",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "sound": "Sound",
+    "language": "Language",
+    "languageEn": "English",
+    "languageId": "Indonesian"
+  },
+  "notifications": {
+    "title": "{eventName} Countdown",
+    "body": "Time remaining: {time}",
+    "done": "{eventName} is complete!"
+  }
+}

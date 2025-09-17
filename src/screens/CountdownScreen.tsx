@@ -1,168 +1,153 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, TouchableOpacity, Text, Vibration } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
-import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, Alert } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { useRoute, RouteProp } from '@react-navigation/native';
+import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import ConfettiCannon from 'react-native-confetti-cannon';
-import { useRoute, RouteProp } from '@react-navigation/native';
 import CountdownTimer from '../components/CountdownTimer';
 import ProgressBar from '../components/ProgressBar';
 import RatingModal from '../components/RatingModal';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useAppStore } from '../store';
-import { scheduleNotification, registerNotificationActions } from '../utils/notifications';
-
-type RootStackParamList = {
-  Countdown: { eventId: string };
-};
+import { colors } from '../constants/colors';
+import { getRandomQuote } from '../constants/quotes';
+import type { RootStackParamList } from '../navigation/AppNavigator';
 
 type CountdownRouteProp = RouteProp<RootStackParamList, 'Countdown'>;
 
 const CountdownScreen: React.FC = () => {
+  const { t } = useTranslation();
   const route = useRoute<CountdownRouteProp>();
   const { eventId } = route.params;
-  const { events, updateStats } = useAppStore();
+  const events = useAppStore((state) => state.events);
+  const updateStats = useAppStore((state) => state.updateStats);
+  const language = useAppStore((state) => state.userPrefs.language);
   const event = events.find((e) => e.id === eventId);
-  const [time, setTime] = useState(0); // Waktu dalam detik
-  const [initialTime, setInitialTime] = useState(0); // Untuk progress bar
+  const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
-  const [isTimerDone, setIsTimerDone] = useState(false);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const confettiRef = useRef<ConfettiCannon>(null);
+  const [isDone, setIsDone] = useState(false);
+  const scale = useSharedValue(1);
 
-  // Animasi untuk tombol
-  const buttonScale = useSharedValue(1);
-  const animatedButtonStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: buttonScale.value }],
-  }));
-
-  // Setup notifikasi
   useEffect(() => {
-    registerNotificationActions();
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, []);
-
-  // Timer logic
-  useEffect(() => {
+    let interval: NodeJS.Timeout;
     if (isRunning && time > 0) {
-      intervalRef.current = setInterval(() => {
-        setTime((prev) => {
-          if (prev <= 1) {
-            clearInterval(intervalRef.current!);
-            setIsRunning(false);
-            setIsTimerDone(true);
-            Vibration.vibrate([0, 500, 200, 500]);
-            confettiRef.current?.start();
-            updateStats(event?.name || 'Event', initialTime);
-            return 0;
-          }
-          scheduleNotification(event?.name || 'Event', prev - 1);
-          return prev - 1;
-        });
+      interval = setInterval(() => {
+        setTime((prev) => prev - 1);
       }, 1000);
     }
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, [isRunning, time, event, initialTime, updateStats]);
+    if (time === 0 && isRunning) {
+      setIsRunning(false);
+      setIsDone(true);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      updateStats(event?.name || 'Event', time);
+    }
+    return () => clearInterval(interval);
+  }, [isRunning, time, event, updateStats]);
 
-  const handleAdjustTime = (delta: number) => {
+  const handleButtonPress = (action: 'start' | 'pause' | 'reset' | 'add' | 'subtract' | 'preset15' | 'preset25' | 'preset45') => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    buttonScale.value = withSpring(1.1, {}, () => {
-      buttonScale.value = withSpring(1);
-    });
-    setTime((prev) => Math.max(0, prev + delta));
-    if (!initialTime) setInitialTime(time + delta);
+    scale.value = withSpring(0.95, {}, () => { scale.value = withSpring(1); });
+    switch (action) {
+      case 'start':
+        if (time > 0) setIsRunning(true);
+        break;
+      case 'pause':
+        setIsRunning(false);
+        break;
+      case 'reset':
+        setIsRunning(false);
+        setTime(0);
+        break;
+      case 'add':
+        setTime((prev) => prev + 1);
+        break;
+      case 'subtract':
+        if (time > 0) setTime((prev) => prev - 1);
+        break;
+      case 'preset15':
+        setTime(15 * 60);
+        break;
+      case 'preset25':
+        setTime(25 * 60);
+        break;
+      case 'preset45':
+        setTime(45 * 60);
+        break;
+    }
   };
 
-  const handlePreset = (minutes: number) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    buttonScale.value = withSpring(1.1, {}, () => {
-      buttonScale.value = withSpring(1);
-    });
-    const newTime = minutes * 60;
-    setTime(newTime);
-    setInitialTime(newTime);
-  };
-
-  const handleStartPause = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    buttonScale.value = withSpring(1.1, {}, () => {
-      buttonScale.value = withSpring(1);
-    });
-    setIsRunning((prev) => !prev);
-  };
-
-  const handleReset = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    buttonScale.value = withSpring(1.1, {}, () => {
-      buttonScale.value = withSpring(1);
-    });
-    setTime(initialTime || 0);
-    setIsRunning(false);
-    if (intervalRef.current) clearInterval(intervalRef.current);
-  };
+  if (!event) {
+    return (
+      <View className={`flex-1 bg-[${colors.backgroundLight}] justify-center items-center`}>
+        <Text className="text-xl text-[${colors.error}]">{t('addEvent.error')}</Text>
+      </View>
+    );
+  }
 
   return (
-    <View className="flex-1 bg-white justify-center items-center p-4">
-      <Text className="text-2xl font-bold text-gray-900 mb-4">{event?.name || 'Event'}</Text>
+    <View className={`flex-1 bg-[${colors.backgroundLight}] p-4`}>
+      {isDone && <ConfettiCannon count={50} origin={{ x: -10, y: 0 }} />}
+      <Text className={`text-2xl font-bold text-[${colors.textPrimary}] mb-4`}>
+        {event.name}
+      </Text>
+      <Text className={`text-base text-[${colors.textSecondary}] mb-4`}>
+        {getRandomQuote(language)}
+      </Text>
       <CountdownTimer time={time} />
-      <ProgressBar progress={initialTime ? time / initialTime : 0} />
-      <View className="flex-row justify-center mt-6">
-        <Animated.View style={animatedButtonStyle}>
-          <TouchableOpacity
-            onPress={() => handleAdjustTime(-1)}
-            className="bg-gray-200 p-4 rounded-full mx-2"
-          >
-            <MaterialIcons name="remove" size={24} color="black" />
-          </TouchableOpacity>
-        </Animated.View>
-        <Animated.View style={animatedButtonStyle}>
-          <TouchableOpacity
-            onPress={() => handleAdjustTime(1)}
-            className="bg-gray-200 p-4 rounded-full mx-2"
-          >
-            <MaterialIcons name="add" size={24} color="black" />
-          </TouchableOpacity>
-        </Animated.View>
+      <ProgressBar progress={time / (45 * 60)} width={250} />
+      <View className="flex-row justify-between mt-4">
+        <TouchableOpacity
+          className={`bg-[${colors.secondary}] p-3 rounded-full`}
+          onPress={() => handleButtonPress('subtract')}
+        >
+          <MaterialIcons name="remove" size={24} color="white" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          className={`bg-[${isRunning ? colors.error : colors.primary}] p-3 rounded-full`}
+          onPress={() => handleButtonPress(isRunning ? 'pause' : 'start')}
+        >
+          <MaterialIcons name={isRunning ? 'pause' : 'play-arrow'} size={24} color="white" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          className={`bg-[${colors.accent}] p-3 rounded-full`}
+          onPress={() => handleButtonPress('add')}
+        >
+          <MaterialIcons name="add" size={24} color="white" />
+        </TouchableOpacity>
       </View>
-      <View className="flex-row justify-center mt-4">
-        {[15, 25, 45].map((minutes) => (
-          <Animated.View key={minutes} style={animatedButtonStyle}>
-            <TouchableOpacity
-              onPress={() => handlePreset(minutes)}
-              className="bg-blue-500 p-3 rounded-lg mx-2"
-            >
-              <Text className="text-white font-semibold">{minutes} min</Text>
-            </TouchableOpacity>
-          </Animated.View>
-        ))}
+      <View className="flex-row justify-between mt-4">
+        <TouchableOpacity
+          className={`bg-[${colors.primary}] p-3 rounded-lg flex-1 mr-2`}
+          onPress={() => handleButtonPress('preset15')}
+        >
+          <Text className="text-white text-center">{t('countdown.preset15')}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          className={`bg-[${colors.primary}] p-3 rounded-lg flex-1 mx-1`}
+          onPress={() => handleButtonPress('preset25')}
+        >
+          <Text className="text-white text-center">{t('countdown.preset25')}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          className={`bg-[${colors.primary}] p-3 rounded-lg flex-1 ml-2`}
+          onPress={() => handleButtonPress('preset45')}
+        >
+          <Text className="text-white text-center">{t('countdown.preset45')}</Text>
+        </TouchableOpacity>
       </View>
-      <View className="flex-row justify-center mt-6">
-        <Animated.View style={animatedButtonStyle}>
-          <TouchableOpacity
-            onPress={handleStartPause}
-            className="bg-green-500 p-4 rounded-full mx-2"
-          >
-            <MaterialIcons name={isRunning ? 'pause' : 'play-arrow'} size={24} color="white" />
-          </TouchableOpacity>
-        </Animated.View>
-        <Animated.View style={animatedButtonStyle}>
-          <TouchableOpacity
-            onPress={handleReset}
-            className="bg-red-500 p-4 rounded-full mx-2"
-          >
-            <MaterialIcons name="refresh" size={24} color="white" />
-          </TouchableOpacity>
-        </Animated.View>
-      </View>
+      <TouchableOpacity
+        className={`bg-[${colors.error}] p-3 rounded-lg mt-4`}
+        onPress={() => handleButtonPress('reset')}
+      >
+        <Text className="text-white text-center">{t('countdown.reset')}</Text>
+      </TouchableOpacity>
       <RatingModal
-        visible={isTimerDone}
-        eventName={event?.name || 'Event'}
-        onClose={() => setIsTimerDone(false)}
+        visible={isDone}
+        eventName={event.name}
+        onClose={() => setIsDone(false)}
       />
-      <ConfettiCannon count={200} origin={{ x: -10, y: 0 }} autoStart={false} ref={confettiRef} />
     </View>
   );
 };
