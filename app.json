@@ -4,38 +4,49 @@
     "slug": "countdown",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/image.png",
+    "icon": "./assets/download.jpg",
     "userInterfaceStyle": "light",
     "jsEngine": "hermes",
     "newArchEnabled": true,
+
     "splash": {
-      "image": "./assets/image.png",
+      "image": "./assets/download.jpg",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.faridmu.countdown"
     },
+
     "android": {
+      "package": "com.faridmu.countdown",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/image.png",
         "backgroundColor": "#ffffff"
       },
+      "permissions": [],
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },
+
     "web": {
       "favicon": "./assets/image.png",
       "bundler": "metro"
     },
+
     "plugins": [
       "expo-font"
     ],
+
     "extra": {
       "eas": {
         "projectId": "c611e151-2a20-4efc-9c2f-64ee4c6d9cc5"
       }
     },
+
     "owner": "faridmu"
   }
 }
