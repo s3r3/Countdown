@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, FlatList, Dimensions } from "react-native";
+import { View, Text, FlatList, Dimensions, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
 import { LineChart } from "react-native-chart-kit";
 import { useAppStore } from "../store";
@@ -22,16 +22,19 @@ const StatsScreen: React.FC = () => {
     .toFixed(1);
 
   return (
-    <View className={`flex-1 bg-[${colors.backgroundLight}] p-4`}>
-      <Text className={`text-2xl font-bold text-[${colors.textPrimary}] mb-4`}>
+    <View
+      style={[styles.container, { backgroundColor: colors.backgroundLight }]}
+    >
+      <Text style={[styles.title, { color: colors.textPrimary }]}>
         {t("stats.title")}
       </Text>
-      <Text className={`text-lg text-[${colors.textPrimary}] mb-2`}>
+      <Text style={[styles.infoText, { color: colors.textPrimary }]}>
         {t("stats.totalTime", { hours: totalHours })}
       </Text>
-      <Text className={`text-lg text-[${colors.textPrimary}] mb-4`}>
+      <Text style={[styles.infoText, { color: colors.textPrimary }]}>
         {t("stats.streaks", { count: stats.streaks })}
       </Text>
+
       <LineChart
         data={data}
         width={screenWidth - 32}
@@ -47,20 +50,23 @@ const StatsScreen: React.FC = () => {
           labelColor: () => colors.textPrimary,
         }}
         bezier
-        style={{ marginVertical: 8, borderRadius: 16 }}
+        style={styles.chart}
       />
-      <Text className={`text-lg text-[${colors.textPrimary}] mt-4 mb-2`}>
+
+      <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
         {t("stats.history")}
       </Text>
       <FlatList
         data={stats.history.slice(-10)}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
-          <View className={`bg-[${colors.cardLight}] p-3 rounded-lg mb-2`}>
-            <Text className={`text-[${colors.textPrimary}]`}>
+          <View
+            style={[styles.historyItem, { backgroundColor: colors.cardLight }]}
+          >
+            <Text style={{ color: colors.textPrimary }}>
               {item.eventName} - {(item.duration / 60).toFixed(1)}m -{" "}
               {item.date.slice(0, 10)}
-              {item.rating && ` - ${item.rating} stars`}
+              {item.rating && ` - ${item.rating} ⭐`}
             </Text>
           </View>
         )}
@@ -70,3 +76,34 @@ const StatsScreen: React.FC = () => {
 };
 
 export default StatsScreen;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 16,
+  },
+  infoText: {
+    fontSize: 16,
+    marginBottom: 8,
+  },
+  chart: {
+    marginVertical: 8,
+    borderRadius: 16,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  historyItem: {
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+});

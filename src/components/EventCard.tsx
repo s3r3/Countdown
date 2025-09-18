@@ -1,5 +1,5 @@
 import React from "react";
-import { TouchableOpacity, Text, View } from "react-native";
+import { TouchableOpacity, Text, StyleSheet } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -30,14 +30,35 @@ const EventCard: React.FC<EventCardProps> = ({
   };
 
   return (
-    <TouchableOpacity
-      onPress={handlePress}
-      className="flex-row items-center p-4 bg-white rounded-lg shadow-md mb-2"
-    >
+    <TouchableOpacity style={styles.card} onPress={handlePress}>
       <MaterialIcons name="timer" size={24} color={color} />
-      <Text className="ml-4 text-lg font-semibold text-gray-900">{name}</Text>
+      <Text style={styles.text}>{name}</Text>
     </TouchableOpacity>
   );
 };
 
 export default EventCard;
+
+const styles = StyleSheet.create({
+  card: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 16,
+    backgroundColor: "white",
+    borderRadius: 12,
+    elevation: 3, // Android shadow
+    marginBottom: 8,
+
+    // iOS shadow
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
+  text: {
+    marginLeft: 12,
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#111827", // tailwind text-gray-900
+  },
+});

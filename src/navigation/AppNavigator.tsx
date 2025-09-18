@@ -1,8 +1,11 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
+import {
+  createStackNavigator,
+  StackNavigationProp,
+} from "@react-navigation/stack";
 import { useTranslation } from "react-i18next";
-import { View } from "react-native";
+import { View, StyleSheet } from "react-native";
 import LottieView from "lottie-react-native";
 import HomeScreen from "../screens/HomeScreen";
 import AddEventScreen from "../screens/AddEventScreen";
@@ -23,10 +26,9 @@ export type RootStackParamList = {
 
 const Stack = createStackNavigator<RootStackParamList>();
 
-import { StackNavigationProp } from "@react-navigation/stack";
-
 const SplashScreen: React.FC = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+
   React.useEffect(() => {
     const timer = setTimeout(() => {
       navigation.replace("Home");
@@ -35,7 +37,7 @@ const SplashScreen: React.FC = () => {
   }, [navigation]);
 
   return (
-    <View className="flex-1 bg-[${colors.backgroundDark}]">
+    <View style={styles.splashContainer}>
       <LottieView
         source={require("../assets/animations/BuqhV4qLkW.json")}
         autoPlay
@@ -67,7 +69,7 @@ const AppNavigator: React.FC = () => {
         <Stack.Screen
           name="Home"
           component={HomeScreen}
-          options={{ title: t("home.title") }}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="AddEvent"
@@ -77,7 +79,7 @@ const AppNavigator: React.FC = () => {
         <Stack.Screen
           name="Countdown"
           component={CountdownScreen}
-          options={{ title: t("countdown.title") }}
+          options={{headerShown: false}}
         />
         <Stack.Screen
           name="Stats"
@@ -95,3 +97,10 @@ const AppNavigator: React.FC = () => {
 };
 
 export default AppNavigator;
+
+const styles = StyleSheet.create({
+  splashContainer: {
+    flex: 1,
+    backgroundColor: colors.backgroundDark,
+  },
+});

@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import Tooltip from "react-native-walkthrough-tooltip";
 import Animated, {
   useSharedValue,
@@ -27,11 +27,15 @@ const CustomTooltip: React.FC<TooltipProps> = ({
     transform: [{ scale: scale.value }],
   }));
 
-  const handlePress = () => {
+  const handleClose = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     scale.value = withSpring(0.95, {}, () => {
       scale.value = withSpring(1);
-      onClose();
+      if (typeof onClose === "function") {
+        onClose();
+      } else {
+        console.warn("⚠️ onClose harus function, dapat:", typeof onClose);
+      }
     });
   };
 
@@ -39,15 +43,12 @@ const CustomTooltip: React.FC<TooltipProps> = ({
     <Tooltip
       isVisible={isVisible}
       content={
-        <Animated.View
-          style={animatedStyle}
-          className="bg-blue-500 p-4 rounded-lg"
-        >
-          <Text className="text-white text-base">{content}</Text>
+        <Animated.View style={[styles.tooltipBox, animatedStyle]}>
+          <Text style={styles.tooltipText}>{content}</Text>
         </Animated.View>
       }
       placement="top"
-      onClose={handlePress}
+      onClose={handleClose}
       backgroundColor="rgba(0,0,0,0.5)"
     >
       {children}
@@ -56,3 +57,15 @@ const CustomTooltip: React.FC<TooltipProps> = ({
 };
 
 export default CustomTooltip;
+
+const styles = StyleSheet.create({
+  tooltipBox: {
+    backgroundColor: "#3B82F6", // bg-blue-500
+    padding: 16, // p-4
+    borderRadius: 12, // rounded-lg
+  },
+  tooltipText: {
+    color: "#FFFFFF", // text-white
+    fontSize: 16, // text-base
+  },
+});

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, Alert } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useRoute, RouteProp } from "@react-navigation/native";
 import Animated, { useSharedValue, withSpring } from "react-native-reanimated";
@@ -24,11 +24,14 @@ const CountdownScreen: React.FC = () => {
   const updateStats = useAppStore((state) => state.updateStats);
   const language = useAppStore((state) => state.userPrefs.language);
   const event = events.find((e) => e.id === eventId);
+
   const [time, setTime] = useState(0);
+  const [maxTime, setMaxTime] = useState(1); // default supaya ga division by zero
   const [isRunning, setIsRunning] = useState(false);
   const [isDone, setIsDone] = useState(false);
   const scale = useSharedValue(1);
 
+  // Timer countdown
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (isRunning && time > 0) {
@@ -40,10 +43,10 @@ const CountdownScreen: React.FC = () => {
       setIsRunning(false);
       setIsDone(true);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      updateStats(event?.name || "Event", time);
+      updateStats(event?.name || "Event", maxTime);
     }
     return () => clearInterval(interval);
-  }, [isRunning, time, event, updateStats]);
+  }, [isRunning, time, event, updateStats, maxTime]);
 
   const handleButtonPress = (
     action:
@@ -60,6 +63,7 @@ const CountdownScreen: React.FC = () => {
     scale.value = withSpring(0.95, {}, () => {
       scale.value = withSpring(1);
     });
+
     switch (action) {
       case "start":
         if (time > 0) setIsRunning(true);
@@ -70,21 +74,29 @@ const CountdownScreen: React.FC = () => {
       case "reset":
         setIsRunning(false);
         setTime(0);
+        setMaxTime(1);
         break;
       case "add":
-        setTime((prev) => prev + 1);
+        setTime((prev) => {
+          const newTime = prev + 1;
+          if (newTime > maxTime) setMaxTime(newTime); // update maxTime kalau tambah manual
+          return newTime;
+        });
         break;
       case "subtract":
         if (time > 0) setTime((prev) => prev - 1);
         break;
       case "preset15":
         setTime(15 * 60);
+        setMaxTime(15 * 60);
         break;
       case "preset25":
         setTime(25 * 60);
+        setMaxTime(25 * 60);
         break;
       case "preset45":
         setTime(45 * 60);
+        setMaxTime(45 * 60);
         break;
     }
   };
@@ -92,9 +104,9 @@ const CountdownScreen: React.FC = () => {
   if (!event) {
     return (
       <View
-        className={`flex-1 bg-[${colors.backgroundLight}] justify-center items-center`}
+        style={[styles.container, { backgroundColor: colors.backgroundLight }]}
       >
-        <Text className="text-xl text-[${colors.error}]">
+        <Text style={[styles.errorText, { color: colors.error }]}>
           {t("addEvent.error")}
         </Text>
       </View>
@@ -102,25 +114,35 @@ const CountdownScreen: React.FC = () => {
   }
 
   return (
-    <View className={`flex-1 bg-[${colors.backgroundLight}] p-4`}>
+    <View
+      style={[styles.container, { backgroundColor: colors.backgroundLight }]}
+    >
       {isDone && <ConfettiCannon count={50} origin={{ x: -10, y: 0 }} />}
-      <Text className={`text-2xl font-bold text-[${colors.textPrimary}] mb-4`}>
+      <Text style={[styles.title, { color: colors.textPrimary }]}>
         {event.name}
       </Text>
-      <Text className={`text-base text-[${colors.textSecondary}] mb-4`}>
+      <Text style={[styles.quote, { color: colors.textSecondary }]}>
         {getRandomQuote(language)}
       </Text>
+
       <CountdownTimer time={time} />
-      <ProgressBar progress={time / (45 * 60)} width={250} />
-      <View className="flex-row justify-between mt-4">
+
+      {/* Progress bar fleksibel */}
+      <ProgressBar progress={time / maxTime} width={325} />
+
+      {/* Control Buttons */}
+      <View style={styles.controlRow}>
         <TouchableOpacity
-          className={`bg-[${colors.secondary}] p-3 rounded-full`}
+          style={[styles.circleButton, { backgroundColor: colors.secondary }]}
           onPress={() => handleButtonPress("subtract")}
         >
           <MaterialIcons name="remove" size={24} color="white" />
         </TouchableOpacity>
         <TouchableOpacity
-          className={`bg-[${isRunning ? colors.error : colors.primary}] p-3 rounded-full`}
+          style={[
+            styles.circleButton,
+            { backgroundColor: isRunning ? colors.error : colors.primary },
+          ]}
           onPress={() => handleButtonPress(isRunning ? "pause" : "start")}
         >
           <MaterialIcons
@@ -130,44 +152,52 @@ const CountdownScreen: React.FC = () => {
           />
         </TouchableOpacity>
         <TouchableOpacity
-          className={`bg-[${colors.accent}] p-3 rounded-full`}
+          style={[styles.circleButton, { backgroundColor: colors.accent }]}
           onPress={() => handleButtonPress("add")}
         >
           <MaterialIcons name="add" size={24} color="white" />
         </TouchableOpacity>
       </View>
-      <View className="flex-row justify-between mt-4">
+
+      {/* Preset Buttons */}
+      <View style={styles.presetRow}>
         <TouchableOpacity
-          className={`bg-[${colors.primary}] p-3 rounded-lg flex-1 mr-2`}
+          style={[
+            styles.presetButton,
+            { backgroundColor: colors.primary, marginRight: 4 },
+          ]}
           onPress={() => handleButtonPress("preset15")}
         >
-          <Text className="text-white text-center">
-            {t("countdown.preset15")}
-          </Text>
+          <Text style={styles.presetButtonText}>{t("countdown.preset15")}</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          className={`bg-[${colors.primary}] p-3 rounded-lg flex-1 mx-1`}
+          style={[
+            styles.presetButton,
+            { backgroundColor: colors.primary, marginHorizontal: 4 },
+          ]}
           onPress={() => handleButtonPress("preset25")}
         >
-          <Text className="text-white text-center">
-            {t("countdown.preset25")}
-          </Text>
+          <Text style={styles.presetButtonText}>{t("countdown.preset25")}</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          className={`bg-[${colors.primary}] p-3 rounded-lg flex-1 ml-2`}
+          style={[
+            styles.presetButton,
+            { backgroundColor: colors.primary, marginLeft: 4 },
+          ]}
           onPress={() => handleButtonPress("preset45")}
         >
-          <Text className="text-white text-center">
-            {t("countdown.preset45")}
-          </Text>
+          <Text style={styles.presetButtonText}>{t("countdown.preset45")}</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Reset Button */}
       <TouchableOpacity
-        className={`bg-[${colors.error}] p-3 rounded-lg mt-4`}
+        style={[styles.resetButton, { backgroundColor: colors.error }]}
         onPress={() => handleButtonPress("reset")}
       >
-        <Text className="text-white text-center">{t("countdown.reset")}</Text>
+        <Text style={styles.resetButtonText}>{t("countdown.reset")}</Text>
       </TouchableOpacity>
+
       <RatingModal
         visible={isDone}
         eventName={event.name}
@@ -178,3 +208,62 @@ const CountdownScreen: React.FC = () => {
 };
 
 export default CountdownScreen;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+    justifyContent: "center",
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 16,
+    textAlign: "center",
+  },
+  quote: {
+    fontSize: 16,
+    marginBottom: 16,
+    textAlign: "center",
+  },
+  errorText: {
+    fontSize: 18,
+    fontWeight: "500",
+  },
+  controlRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 16,
+  },
+  circleButton: {
+    padding: 12,
+    borderRadius: 999,
+  },
+  presetRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 16,
+  },
+  presetButton: {
+    flex: 1,
+    padding: 12,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  presetButtonText: {
+    color: "white",
+    fontWeight: "600",
+    textAlign: "center",
+  },
+  resetButton: {
+    padding: 12,
+    borderRadius: 8,
+    marginTop: 16,
+    alignItems: "center",
+  },
+  resetButtonText: {
+    color: "white",
+    fontWeight: "600",
+    textAlign: "center",
+  },
+});

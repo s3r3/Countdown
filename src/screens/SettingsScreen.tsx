@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
 import * as Haptics from "expo-haptics";
 import { useAppStore } from "../store";
@@ -20,34 +20,40 @@ const SettingsScreen: React.FC = () => {
   };
 
   return (
-    <View className={`flex-1 bg-[${colors.backgroundLight}] p-4`}>
-      <Text className={`text-2xl font-bold text-[${colors.textPrimary}] mb-4`}>
+    <View
+      style={[styles.container, { backgroundColor: colors.backgroundLight }]}
+    >
+      <Text style={[styles.title, { color: colors.textPrimary }]}>
         {t("settings.title")}
       </Text>
-      <View className="mb-4">
-        <Text className={`text-lg text-[${colors.textPrimary}] mb-2`}>
+
+      {/* Theme Section */}
+      <View style={styles.section}>
+        <Text style={[styles.label, { color: colors.textPrimary }]}>
           {t("settings.theme")}
         </Text>
         <TouchableOpacity
-          className={`bg-[${colors.primary}] p-3 rounded-lg`}
+          style={[styles.button, { backgroundColor: colors.primary }]}
           onPress={toggleTheme}
         >
-          <Text className="text-white">
+          <Text style={styles.buttonText}>
             {t(
               `settings.theme${userPrefs.theme === "light" ? "Dark" : "Light"}`,
             )}
           </Text>
         </TouchableOpacity>
       </View>
-      <View className="mb-4">
-        <Text className={`text-lg text-[${colors.textPrimary}] mb-2`}>
+
+      {/* Language Section */}
+      <View style={styles.section}>
+        <Text style={[styles.label, { color: colors.textPrimary }]}>
           {t("settings.language")}
         </Text>
         <TouchableOpacity
-          className={`bg-[${colors.primary}] p-3 rounded-lg`}
+          style={[styles.button, { backgroundColor: colors.primary }]}
           onPress={toggleLanguage}
         >
-          <Text className="text-white">
+          <Text style={styles.buttonText}>
             {t(`settings.language${userPrefs.language === "en" ? "Id" : "En"}`)}
           </Text>
         </TouchableOpacity>
@@ -57,3 +63,31 @@ const SettingsScreen: React.FC = () => {
 };
 
 export default SettingsScreen;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 16,
+  },
+  section: {
+    marginBottom: 16,
+  },
+  label: {
+    fontSize: 18,
+    marginBottom: 8,
+  },
+  button: {
+    padding: 12,
+    borderRadius: 8,
+  },
+  buttonText: {
+    color: "white",
+    fontWeight: "600",
+    textAlign: "center",
+  },
+});

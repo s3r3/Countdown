@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { View } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -15,43 +15,38 @@ const formatTime = (seconds: number): string => {
   const hrs = Math.floor(seconds / 3600);
   const mins = Math.floor((seconds % 3600) / 60);
   const secs = seconds % 60;
-  return `${hrs.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  return `${hrs.toString().padStart(2, "0")}:${mins
+    .toString()
+    .padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
 };
 
 const CountdownTimer: React.FC<CountdownTimerProps> = ({ time }) => {
-  // Shared value harus di-declare di top-level (bukan di useEffect)
   const scale = useSharedValue(1);
 
-  // Handle subscription listener hanya sekali (mount/unmount)
+  // Setup listener hanya sekali
   useEffect(() => {
     const subscription = setupNotificationListener();
-
     return () => {
-      // Kalau setupNotificationListener return sesuatu yang bisa di-unsubscribe
       if (subscription?.remove) {
         subscription.remove();
       }
     };
   }, []);
 
-  // Animasi scale setiap kali `time` berubah
+  // Animasi scale ketika `time` berubah
   useEffect(() => {
     scale.value = withTiming(1.1, { duration: 100 }, () => {
       scale.value = withTiming(1, { duration: 100 });
     });
   }, [time, scale]);
 
-  // Animated style
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
   }));
 
   return (
-    <View className="items-center">
-      <Animated.Text
-        style={animatedStyle}
-        className="text-6xl font-bold text-gray-900"
-      >
+    <View style={styles.container}>
+      <Animated.Text style={[styles.timerText, animatedStyle]}>
         {formatTime(time)}
       </Animated.Text>
     </View>
@@ -59,3 +54,14 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ time }) => {
 };
 
 export default CountdownTimer;
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: "center",
+  },
+  timerText: {
+    fontSize: 48, // setara dengan text-6xl
+    fontWeight: "bold",
+    color: "#111827", // tailwind text-gray-900
+  },
+});

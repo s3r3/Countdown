@@ -2,7 +2,13 @@
   "home": {
     "title": "Timer Mundur",
     "empty": "Tambah event pertamamu!",
-    "addButton": "Tambah Event"
+    "addButton": "Tambah Event",
+    "deleteTitle": "Hapus Event",
+    "deleteMessage": "Apakah kamu yakin ingin menghapus event ini?"
+  },
+  "common": {
+    "Delete": "Hapus",
+    "Cancel": "Batal"
   },
   "addEvent": {
     "title": "Buat Event Baru",

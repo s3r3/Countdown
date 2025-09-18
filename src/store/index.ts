@@ -3,6 +3,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { persist } from "zustand/middleware";
 import { v4 as uuidv4 } from "uuid";
 
+// -------------------
+// Interfaces / Types
+// -------------------
 interface Event {
   id: string;
   name: string;
@@ -38,20 +41,30 @@ interface AppState {
   stats: Stats;
   userPrefs: UserPrefs;
   timerState: TimerState;
+
+  // Actions
   addEvent: (name: string, color?: string) => void;
   deleteEvent: (id: string) => void;
   updateStats: (eventName: string, duration: number, rating?: number) => void;
+  resetStats: () => void;
+
   setUserPrefs: (prefs: Partial<UserPrefs>) => void;
   setTimerState: (timer: Partial<TimerState>) => void;
 }
 
+// -------------------
+// Store
+// -------------------
 export const useAppStore = create<AppState>()(
   persist(
     (set) => ({
+      // Default state
       events: [],
       stats: { points: 0, streaks: 0, history: [] },
       userPrefs: { theme: "light", sound: "default", language: "id" },
       timerState: { eventId: null, time: 0, isRunning: false },
+
+      // Actions
       addEvent: (name, color) =>
         set((state) => ({
           events: [
@@ -59,30 +72,48 @@ export const useAppStore = create<AppState>()(
             { id: uuidv4(), name, initialTime: 0, color },
           ],
         })),
+
       deleteEvent: (id) =>
         set((state) => ({
           events: state.events.filter((event) => event.id !== id),
         })),
+
       updateStats: (eventName, duration, rating) =>
-        set((state) => ({
-          stats: {
-            ...state.stats,
-            points: state.stats.points + (rating ? rating * 2 : 10),
-            streaks:
-              new Date().toDateString() ===
-              new Date(state.stats.history.slice(-1)[0]?.date).toDateString()
-                ? state.stats.streaks + 1
-                : 1,
-            history: [
-              ...state.stats.history,
-              { eventName, duration, date: new Date().toISOString(), rating },
-            ],
-          },
+        set((state) => {
+          const lastHistory = state.stats.history.slice(-1)[0];
+          const isSameDay =
+            lastHistory &&
+            new Date().toDateString() ===
+              new Date(lastHistory.date).toDateString();
+
+          return {
+            stats: {
+              ...state.stats,
+              points: state.stats.points + (rating ? rating * 2 : 10),
+              streaks: isSameDay ? state.stats.streaks + 1 : 1,
+              history: [
+                ...state.stats.history,
+                {
+                  eventName,
+                  duration,
+                  date: new Date().toISOString(),
+                  rating,
+                },
+              ],
+            },
+          };
+        }),
+
+      resetStats: () =>
+        set(() => ({
+          stats: { points: 0, streaks: 0, history: [] },
         })),
+
       setUserPrefs: (prefs) =>
         set((state) => ({
           userPrefs: { ...state.userPrefs, ...prefs },
         })),
+
       setTimerState: (timer) =>
         set((state) => ({
           timerState: { ...state.timerState, ...timer },

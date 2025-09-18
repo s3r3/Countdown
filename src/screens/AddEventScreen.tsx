@@ -1,9 +1,15 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  StyleSheet,
+} from "react-native";
 import { useTranslation } from "react-i18next";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { MaterialIcons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { useAppStore } from "../store";
 import { colors } from "../constants/colors";
@@ -29,22 +35,34 @@ const AddEventScreen: React.FC = () => {
   };
 
   return (
-    <View className={`flex-1 bg-[${colors.backgroundLight}] p-4`}>
-      <Text className={`text-2xl font-bold text-[${colors.textPrimary}] mb-4`}>
+    <View
+      style={[styles.container, { backgroundColor: colors.backgroundLight }]}
+    >
+      <Text style={[styles.title, { color: colors.textPrimary }]}>
         {t("addEvent.title")}
       </Text>
       <TextInput
-        className={`border border-[${colors.textSecondary}] rounded-lg p-3 mb-4 text-[${colors.textPrimary}]`}
+        style={[
+          styles.input,
+          { borderColor: colors.textSecondary, color: colors.textPrimary },
+        ]}
         placeholder={t("addEvent.namePlaceholder")}
+        placeholderTextColor={colors.textSecondary}
         value={name}
         onChangeText={setName}
       />
-      <View className="flex-row mb-4">
+      <View style={styles.colorOptionsContainer}>
         {["#3B82F6", "#10B981", "#F59E0B", "#EF4444"].map((c) => (
           <TouchableOpacity
             key={c}
-            className={`w-10 h-10 rounded-full mr-2 ${color === c ? "border-2 border-[${colors.textPrimary}]" : ""}`}
-            style={{ backgroundColor: c }}
+            style={[
+              styles.colorCircle,
+              { backgroundColor: c },
+              color === c && {
+                borderWidth: 2,
+                borderColor: colors.textPrimary,
+              },
+            ]}
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               setColor(c);
@@ -53,13 +71,51 @@ const AddEventScreen: React.FC = () => {
         ))}
       </View>
       <TouchableOpacity
-        className={`bg-[${colors.primary}] p-4 rounded-lg items-center`}
+        style={[styles.submitButton, { backgroundColor: colors.primary }]}
         onPress={handleSubmit}
       >
-        <Text className="text-white font-semibold">{t("addEvent.submit")}</Text>
+        <Text style={styles.submitButtonText}>{t("addEvent.submit")}</Text>
       </TouchableOpacity>
     </View>
   );
 };
 
 export default AddEventScreen;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  title: {
+    fontSize: 24, // text-2xl kira-kira
+    fontWeight: "bold",
+    marginBottom: 16,
+  },
+  input: {
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+    // text color & borderColor akan override melalui props
+  },
+  colorOptionsContainer: {
+    flexDirection: "row",
+    marginBottom: 16,
+  },
+  colorCircle: {
+    width: 40, // kira-kira w-10
+    height: 40, // h-10
+    borderRadius: 20,
+    marginRight: 8,
+  },
+  submitButton: {
+    padding: 16,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  submitButtonText: {
+    color: "#FFFFFF",
+    fontWeight: "600",
+  },
+});
