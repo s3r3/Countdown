@@ -1,10 +1,9 @@
-
-import React from 'react';
-import { TouchableOpacity, Text, View } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import * as Haptics from 'expo-haptics';
+import React from "react";
+import { TouchableOpacity, Text, View } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import * as Haptics from "expo-haptics";
 
 type RootStackParamList = {
   Countdown: { eventId: string };
@@ -18,12 +17,16 @@ interface EventCardProps {
   color?: string;
 }
 
-const EventCard: React.FC<EventCardProps> = ({ id, name, color = '#3B82F6' }) => {
+const EventCard: React.FC<EventCardProps> = ({
+  id,
+  name,
+  color = "#3B82F6",
+}) => {
   const navigation = useNavigation<NavigationProp>();
 
   const handlePress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    navigation.navigate('Countdown', { eventId: id });
+    navigation.navigate("Countdown", { eventId: id });
   };
 
   return (

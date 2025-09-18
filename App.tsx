@@ -1,9 +1,11 @@
-
-import React, { useEffect } from 'react';
-import AppNavigator  from './src/navigation/AppNavigator';
+import React, { useEffect } from "react";
+import AppNavigator from "./src/navigation/AppNavigator";
 // import './src/i18n'; // Inisialisasi i18n
-import { setupNotificationListener, requestNotificationPermission } from './src/utils/notifications';
-import "./global.css"
+import {
+  setupNotificationListener,
+  requestNotificationPermission,
+} from "./src/utils/notifications";
+import "./global.css";
 
 const App: React.FC = () => {
   useEffect(() => {

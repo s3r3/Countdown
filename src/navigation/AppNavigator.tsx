@@ -1,17 +1,16 @@
-
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { useTranslation } from 'react-i18next';
-import { View } from 'react-native';
-import LottieView from 'lottie-react-native';
-import HomeScreen from '../screens/HomeScreen';
-import AddEventScreen from '../screens/AddEventScreen';
-import CountdownScreen from '../screens/CountdownScreen';
-import StatsScreen from '../screens/StatsScreen';
-import SettingsScreen from '../screens/SettingsScreen';
-import { colors } from '../constants/colors';
-import { useNavigation } from '@react-navigation/native';
+import React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { useTranslation } from "react-i18next";
+import { View } from "react-native";
+import LottieView from "lottie-react-native";
+import HomeScreen from "../screens/HomeScreen";
+import AddEventScreen from "../screens/AddEventScreen";
+import CountdownScreen from "../screens/CountdownScreen";
+import StatsScreen from "../screens/StatsScreen";
+import SettingsScreen from "../screens/SettingsScreen";
+import { colors } from "../constants/colors";
+import { useNavigation } from "@react-navigation/native";
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -24,13 +23,13 @@ export type RootStackParamList = {
 
 const Stack = createStackNavigator<RootStackParamList>();
 
-import { StackNavigationProp } from '@react-navigation/stack';
+import { StackNavigationProp } from "@react-navigation/stack";
 
 const SplashScreen: React.FC = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   React.useEffect(() => {
     const timer = setTimeout(() => {
-      navigation.replace('Home');
+      navigation.replace("Home");
     }, 3000);
     return () => clearTimeout(timer);
   }, [navigation]);
@@ -38,7 +37,7 @@ const SplashScreen: React.FC = () => {
   return (
     <View className="flex-1 bg-[${colors.backgroundDark}]">
       <LottieView
-        source={require('../assets/animations/BuqhV4qLkW.json')}
+        source={require("../assets/animations/BuqhV4qLkW.json")}
         autoPlay
         loop
         style={{ flex: 1 }}
@@ -57,7 +56,7 @@ const AppNavigator: React.FC = () => {
         screenOptions={{
           headerStyle: { backgroundColor: colors.primary },
           headerTintColor: colors.textPrimary,
-          headerTitleStyle: { fontWeight: 'bold' },
+          headerTitleStyle: { fontWeight: "bold" },
         }}
       >
         <Stack.Screen
@@ -68,27 +67,27 @@ const AppNavigator: React.FC = () => {
         <Stack.Screen
           name="Home"
           component={HomeScreen}
-          options={{ title: t('home.title') }}
+          options={{ title: t("home.title") }}
         />
         <Stack.Screen
           name="AddEvent"
           component={AddEventScreen}
-          options={{ title: t('addEvent.title') }}
+          options={{ title: t("addEvent.title") }}
         />
         <Stack.Screen
           name="Countdown"
           component={CountdownScreen}
-          options={{ title: t('countdown.title') }}
+          options={{ title: t("countdown.title") }}
         />
         <Stack.Screen
           name="Stats"
           component={StatsScreen}
-          options={{ title: t('stats.title') }}
+          options={{ title: t("stats.title") }}
         />
         <Stack.Screen
           name="Settings"
           component={SettingsScreen}
-          options={{ title: t('settings.title') }}
+          options={{ title: t("settings.title") }}
         />
       </Stack.Navigator>
     </NavigationContainer>
@@ -96,4 +95,3 @@ const AppNavigator: React.FC = () => {
 };
 
 export default AppNavigator;
-

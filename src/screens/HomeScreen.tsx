@@ -1,16 +1,15 @@
-
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList } from 'react-native';
-import { useTranslation } from 'react-i18next';
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { MaterialIcons } from '@expo/vector-icons';
-import * as Haptics from 'expo-haptics';
-import EventCard from '../components/EventCard';
-import Tooltip from '../components/Tooltip';
-import { useAppStore } from '../store';
-import { colors } from '../constants/colors';
-import type { RootStackParamList } from '../navigation/AppNavigator';
+import React, { useState } from "react";
+import { View, Text, TouchableOpacity, FlatList } from "react-native";
+import { useTranslation } from "react-i18next";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { MaterialIcons } from "@expo/vector-icons";
+import * as Haptics from "expo-haptics";
+import EventCard from "../components/EventCard";
+import Tooltip from "../components/Tooltip";
+import { useAppStore } from "../store";
+import { colors } from "../constants/colors";
+import type { RootStackParamList } from "../navigation/AppNavigator";
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 
@@ -22,17 +21,19 @@ const HomeScreen: React.FC = () => {
 
   const handleAddEvent = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    navigation.navigate('AddEvent');
+    navigation.navigate("AddEvent");
   };
 
   return (
     <View className={`flex-1 bg-[${colors.backgroundLight}] p-4`}>
       <Text className={`text-2xl font-bold text-[${colors.textPrimary}] mb-4`}>
-        {t('home.title')}
+        {t("home.title")}
       </Text>
       {events.length === 0 ? (
         <View className="flex-1 justify-center items-center">
-          <Text className={`text-lg text-[${colors.textSecondary}]`}>{t('home.empty')}</Text>
+          <Text className={`text-lg text-[${colors.textSecondary}]`}>
+            {t("home.empty")}
+          </Text>
         </View>
       ) : (
         <FlatList
@@ -45,7 +46,7 @@ const HomeScreen: React.FC = () => {
       )}
       <Tooltip
         isVisible={showTooltip}
-        content={t('home.addButton')}
+        content={t("home.addButton")}
         onClose={() => setShowTooltip(false)}
       >
         <TouchableOpacity

@@ -1,10 +1,13 @@
-
-import React, { useEffect } from 'react';
-import { Modal, View, Text, TouchableOpacity } from 'react-native';
-import { Rating } from 'react-native-ratings';
-import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import * as Haptics from 'expo-haptics';
-import { useAppStore } from '../store';
+import React, { useEffect } from "react";
+import { Modal, View, Text, TouchableOpacity } from "react-native";
+import { Rating } from "react-native-ratings";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from "react-native-reanimated";
+import * as Haptics from "expo-haptics";
+import { useAppStore } from "../store";
 
 interface RatingModalProps {
   visible: boolean;
@@ -12,7 +15,11 @@ interface RatingModalProps {
   onClose: () => void;
 }
 
-const RatingModal: React.FC<RatingModalProps> = ({ visible, eventName, onClose }) => {
+const RatingModal: React.FC<RatingModalProps> = ({
+  visible,
+  eventName,
+  onClose,
+}) => {
   const opacity = useSharedValue(0);
   const updateStats = useAppStore((state) => state.updateStats);
 
@@ -42,7 +49,10 @@ const RatingModal: React.FC<RatingModalProps> = ({ visible, eventName, onClose }
       onRequestClose={onClose}
     >
       <View className="flex-1 justify-center items-center bg-black/50">
-        <Animated.View style={animatedStyle} className="bg-white rounded-lg p-6 w-4/5">
+        <Animated.View
+          style={animatedStyle}
+          className="bg-white rounded-lg p-6 w-4/5"
+        >
           <Text className="text-xl font-bold text-gray-900 mb-4">
             Rate sesi "{eventName}"
           </Text>

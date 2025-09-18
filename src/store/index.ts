@@ -1,8 +1,7 @@
-
-import { create } from 'zustand';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { persist } from 'zustand/middleware';
-import { v4 as uuidv4 } from 'uuid';
+import { create } from "zustand";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { persist } from "zustand/middleware";
+import { v4 as uuidv4 } from "uuid";
 
 interface Event {
   id: string;
@@ -14,13 +13,18 @@ interface Event {
 interface Stats {
   points: number;
   streaks: number;
-  history: Array<{ eventName: string; duration: number; date: string; rating?: number }>;
+  history: Array<{
+    eventName: string;
+    duration: number;
+    date: string;
+    rating?: number;
+  }>;
 }
 
 interface UserPrefs {
-  theme: 'light' | 'dark';
+  theme: "light" | "dark";
   sound: string;
-  language: 'en' | 'id';
+  language: "en" | "id";
 }
 
 interface TimerState {
@@ -46,11 +50,14 @@ export const useAppStore = create<AppState>()(
     (set) => ({
       events: [],
       stats: { points: 0, streaks: 0, history: [] },
-      userPrefs: { theme: 'light', sound: 'default', language: 'id' },
+      userPrefs: { theme: "light", sound: "default", language: "id" },
       timerState: { eventId: null, time: 0, isRunning: false },
       addEvent: (name, color) =>
         set((state) => ({
-          events: [...state.events, { id: uuidv4(), name, initialTime: 0, color }],
+          events: [
+            ...state.events,
+            { id: uuidv4(), name, initialTime: 0, color },
+          ],
         })),
       deleteEvent: (id) =>
         set((state) => ({
@@ -61,10 +68,15 @@ export const useAppStore = create<AppState>()(
           stats: {
             ...state.stats,
             points: state.stats.points + (rating ? rating * 2 : 10),
-            streaks: new Date().toDateString() === new Date(state.stats.history.slice(-1)[0]?.date).toDateString()
-              ? state.stats.streaks + 1
-              : 1,
-            history: [...state.stats.history, { eventName, duration, date: new Date().toISOString(), rating }],
+            streaks:
+              new Date().toDateString() ===
+              new Date(state.stats.history.slice(-1)[0]?.date).toDateString()
+                ? state.stats.streaks + 1
+                : 1,
+            history: [
+              ...state.stats.history,
+              { eventName, duration, date: new Date().toISOString(), rating },
+            ],
           },
         })),
       setUserPrefs: (prefs) =>
@@ -77,7 +89,7 @@ export const useAppStore = create<AppState>()(
         })),
     }),
     {
-      name: 'countdown-timer-storage',
+      name: "countdown-timer-storage",
       storage: {
         getItem: async (name) => {
           const value = await AsyncStorage.getItem(name);
@@ -90,6 +102,6 @@ export const useAppStore = create<AppState>()(
           await AsyncStorage.removeItem(name);
         },
       },
-    }
-  )
+    },
+  ),
 );

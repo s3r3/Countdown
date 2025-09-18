@@ -1,8 +1,11 @@
-
-import React from 'react';
-import { View } from 'react-native';
-import * as Progress from 'react-native-progress';
-import Animated, { useSharedValue, useAnimatedProps, withTiming } from 'react-native-reanimated';
+import React from "react";
+import { View } from "react-native";
+import * as Progress from "react-native-progress";
+import Animated, {
+  useSharedValue,
+  useAnimatedProps,
+  withTiming,
+} from "react-native-reanimated";
 
 interface ProgressBarProps {
   progress: number; // Nilai antara 0 dan 1

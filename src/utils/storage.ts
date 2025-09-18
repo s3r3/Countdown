@@ -1,5 +1,4 @@
-
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 /**
  * Save data to AsyncStorage.
@@ -10,7 +9,7 @@ export const saveToStorage = async (key: string, value: any): Promise<void> => {
   try {
     await AsyncStorage.setItem(key, JSON.stringify(value));
   } catch (error) {
-    console.error('Error saving to AsyncStorage:', error);
+    console.error("Error saving to AsyncStorage:", error);
   }
 };
 
@@ -24,7 +23,7 @@ export const loadFromStorage = async (key: string): Promise<any | null> => {
     const value = await AsyncStorage.getItem(key);
     return value ? JSON.parse(value) : null;
   } catch (error) {
-    console.error('Error loading from AsyncStorage:', error);
+    console.error("Error loading from AsyncStorage:", error);
     return null;
   }
 };
@@ -37,7 +36,7 @@ export const removeFromStorage = async (key: string): Promise<void> => {
   try {
     await AsyncStorage.removeItem(key);
   } catch (error) {
-    console.error('Error removing from AsyncStorage:', error);
+    console.error("Error removing from AsyncStorage:", error);
   }
 };
 
@@ -48,6 +47,6 @@ export const clearStorage = async (): Promise<void> => {
   try {
     await AsyncStorage.clear();
   } catch (error) {
-    console.error('Error clearing AsyncStorage:', error);
+    console.error("Error clearing AsyncStorage:", error);
   }
 };
