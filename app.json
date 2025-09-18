@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Countdown",
-    "slug": "Countdown",
+    "slug": "countdown",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/image.png",
@@ -28,6 +28,14 @@
       "favicon": "./assets/image.png",
       "bundler": "metro"
     },
-    "plugins": ["expo-font"]
+    "plugins": [
+      "expo-font"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "c611e151-2a20-4efc-9c2f-64ee4c6d9cc5"
+      }
+    },
+    "owner": "faridmu"
   }
 }
